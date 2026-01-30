@@ -1,40 +1,33 @@
-plugins {
-    id "com.android.application"
-    id "kotlin-android"
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
-    id "dev.flutter.flutter-gradle-plugin"
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
 }
 
-android {
-    namespace "com.novaverse.novaverse"
-    compileSdk 35
-    ndkVersion flutter.ndkVersion
+ext {
+    compileSdkVersion = 35
+}
 
-    defaultConfig {
-        applicationId "com.novaverse.novaverse"
-        minSdk flutter.minSdkVersion
-        targetSdk 35
-        versionCode flutter.versionCode
-        versionName flutter.versionName
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
     }
+}
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-
-    buildTypes {
-        release {
-            // Debug signing only for CI build
-            signingConfig signingConfigs.debug
+/*
+  IMPORTANT:
+  This block forces ALL Android modules (including plugins like
+  package_info_plus, audioplayers, etc.) to use compileSdk 35.
+  This fixes CI / GitHub Actions failures.
+*/
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty("android")) {
+            project.android {
+                compileSdkVersion 35
+            }
         }
     }
-}
-
-flutter {
-    source "../.."
 }
