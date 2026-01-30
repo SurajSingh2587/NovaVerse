@@ -6,33 +6,34 @@ plugins {
 }
 
 android {
-    namespace = "com.novaverse.novaverse"
-    compileSdk = 35
-    ndkVersion = flutter.ndkVersion
+    namespace "com.novaverse.novaverse"
+    compileSdk 35
+    ndkVersion flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = "1.8"
     }
 
     defaultConfig {
-        applicationId = "com.novaverse.novaverse"
-        minSdk = flutter.minSdkVersion
-        targetSdk = 35
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        applicationId "com.novaverse.novaverse"
+        minSdk flutter.minSdkVersion
+        targetSdk 35
+        versionCode flutter.versionCode
+        versionName flutter.versionName
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.debug
+            signingConfig signingConfigs.debug
         }
     }
 }
+
 
 
     buildTypes {
