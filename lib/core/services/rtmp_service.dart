@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+// Debugging: Ensure apivideo_live_stream is loaded
+// import 'package:apivideo_live_stream/apivideo_live_stream.dart';
+
 class RtmpService extends ChangeNotifier {
-  LiveStreamController? _controller;
+  ApiVideoLiveStreamController? _controller;
   bool _isStreaming = false;
 
   bool get isStreaming => _isStreaming;
-  LiveStreamController? get controller => _controller;
+  ApiVideoLiveStreamController? get controller => _controller;
 
   Future<void> initialize() async {
     // Check permissions
@@ -19,7 +22,7 @@ class RtmpService extends ChangeNotifier {
     ].request();
 
     try {
-      _controller = LiveStreamController(
+      _controller = ApiVideoLiveStreamController(
         initialAudioConfig: AudioConfig(
           bitrate: 128 * 1000,
           channel: AudioChannel.stereo,
@@ -31,7 +34,7 @@ class RtmpService extends ChangeNotifier {
 
       // Initialize controller (might involve creating tracks)
       // Note: create() is often async
-      await _controller?.create();
+      await _controller?.initialize();
       notifyListeners();
     } catch (e) {
       debugPrint("Error initializing RtmpService: $e");

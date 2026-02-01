@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 // Stub classes for Web
-class LiveStreamController {
-  LiveStreamController(
+class ApiVideoLiveStreamController {
+  ApiVideoLiveStreamController(
       {dynamic initialAudioConfig, dynamic initialVideoConfig});
 
-  Future<void> create() async {}
+  Future<void> initialize() async {}
   Future<void> startStreaming(
       {required String streamKey, required String url}) async {}
   Future<void> stopStreaming() async {}
@@ -35,7 +35,7 @@ class VideoResolution {
 }
 
 class ApiVideoCameraPreview extends StatelessWidget {
-  final LiveStreamController controller;
+  final ApiVideoLiveStreamController controller;
   const ApiVideoCameraPreview({super.key, required this.controller});
 
   @override
