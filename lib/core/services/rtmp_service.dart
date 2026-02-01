@@ -1,0 +1,102 @@
+import 'live_stream_platform.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+class RtmpService extends ChangeNotifier {
+  LiveStreamController? _controller;
+  bool _isStreaming = false;
+
+  bool get isStreaming => _isStreaming;
+  LiveStreamController? get controller => _controller;
+
+  Future<void> initialize() async {
+    if (kIsWeb) {
+      debugPrint("RtmpService: Web platform not supported for RTMP streaming");
+      return;
+    }
+
+    // Check permissions
+    await [
+      Permission.camera,
+      Permission.microphone,
+    ].request();
+
+    try {
+      _controller = LiveStreamController(
+        initialAudioConfig: AudioConfig(
+          bitrate: 128 * 1000,
+          channel: AudioChannel.stereo,
+        ),
+        initialVideoConfig: VideoConfig.withDefaultBitrate(
+          resolution: VideoResolution.res720p,
+        ),
+      );
+
+      // Initialize controller (might involve creating tracks)
+      // Note: create() is often async
+      await _controller?.create();
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error initializing RtmpService: $e");
+    }
+  }
+
+  Future<void> startStream({
+    required String url,
+    required String streamKey,
+  }) async {
+    if (_controller == null) await initialize();
+
+    try {
+      await _controller?.startStreaming(
+        streamKey: streamKey,
+        url: url,
+      );
+      _isStreaming = true;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error starting stream: $e");
+      _isStreaming = false;
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  Future<void> stopStream() async {
+    try {
+      await _controller?.stopStreaming();
+    } catch (e) {
+      debugPrint("Error stopping stream: $e");
+    }
+    _isStreaming = false;
+    notifyListeners();
+  }
+
+  void setMicVolume(double volume) {
+    if (_controller != null) {
+      // apivideo_live_stream 1.2.0 might use setAudioConfig or similar,
+      // or audioVolume property if available.
+      // If not directly available in this version, we log it.
+      // _controller!.setAudioConfig(...);
+    }
+  }
+
+  void setSystemVolume(double volume) {
+    // Not typically supported directly for system audio capture on mobile without special permissions
+  }
+
+  void switchCamera() {
+    _controller?.switchCamera();
+  }
+
+  void toggleMute() {
+    _controller?.toggleMute();
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose(); // Release resources
+    super.dispose();
+  }
+}
