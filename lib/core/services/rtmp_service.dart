@@ -1,4 +1,5 @@
-import 'live_stream_platform.dart';
+import 'package:apivideo_live_stream/apivideo_live_stream.dart'
+    if (dart.library.html) 'live_stream_web.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
