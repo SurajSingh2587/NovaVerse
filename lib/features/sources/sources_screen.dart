@@ -389,7 +389,7 @@ class _EmptySourcesView extends StatelessWidget {
           Container(
             width: 80,
             height: 80,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.surfaceLight,
               shape: BoxShape.circle,
             ),

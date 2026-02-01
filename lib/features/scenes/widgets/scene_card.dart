@@ -119,7 +119,7 @@ class SceneCard extends StatelessWidget {
                   // Sources preview
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.view_in_ar_rounded,
                         color: AppColors.textTertiary,
                         size: 14,

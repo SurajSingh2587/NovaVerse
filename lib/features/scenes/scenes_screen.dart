@@ -53,7 +53,7 @@ class ScenesScreen extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: Text(
+              child: const Text(
                 'Create and manage your streaming scenes. Tap to switch, long press for options.',
                 style: TextStyle(
                   fontSize: 14,

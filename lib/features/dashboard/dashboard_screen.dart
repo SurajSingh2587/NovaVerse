@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/providers/stream_provider.dart';
-import '../../core/providers/scene_provider.dart';
-import '../../core/providers/settings_provider.dart';
 import '../preview/preview_widget.dart';
 import 'widgets/stream_controls.dart';
 import 'widgets/audio_mixer.dart';
@@ -21,17 +17,17 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   bool _isLandscape = false;
-  
+
   @override
   Widget build(BuildContext context) {
     final orientation = MediaQuery.of(context).orientation;
     _isLandscape = orientation == Orientation.landscape;
-    
+
     return SafeArea(
       child: _isLandscape ? _buildLandscapeLayout() : _buildPortraitLayout(),
     );
   }
-  
+
   Widget _buildPortraitLayout() {
     return CustomScrollView(
       slivers: [
@@ -72,7 +68,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(width: 8),
           ],
         ),
-        
+
         // Content
         SliverToBoxAdapter(
           child: Padding(
@@ -85,39 +81,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     .animate()
                     .fadeIn(duration: 400.ms)
                     .slideY(begin: 0.1),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Stream Controls
                 const StreamControls()
                     .animate()
                     .fadeIn(delay: 100.ms, duration: 400.ms)
                     .slideY(begin: 0.1),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Stream Stats
                 const StreamStats()
                     .animate()
                     .fadeIn(delay: 200.ms, duration: 400.ms)
                     .slideY(begin: 0.1),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Audio Mixer
                 const AudioMixer()
                     .animate()
                     .fadeIn(delay: 300.ms, duration: 400.ms)
                     .slideY(begin: 0.1),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Quick Actions
                 const QuickActions()
                     .animate()
                     .fadeIn(delay: 400.ms, duration: 400.ms)
                     .slideY(begin: 0.1),
-                
+
                 const SizedBox(height: 100),
               ],
             ),
@@ -126,7 +122,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ],
     );
   }
-  
+
   Widget _buildLandscapeLayout() {
     return Row(
       children: [
@@ -169,23 +165,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
         ),
-        
+
         // Right side - Controls
         Expanded(
           flex: 2,
           child: Container(
             color: AppColors.surface.withOpacity(0.5),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+            child: const SingleChildScrollView(
+              padding: EdgeInsets.all(16),
               child: Column(
                 children: [
-                  const StreamControls(),
-                  const SizedBox(height: 16),
-                  const StreamStats(),
-                  const SizedBox(height: 16),
-                  const AudioMixer(),
-                  const SizedBox(height: 16),
-                  const QuickActions(),
+                  StreamControls(),
+                  SizedBox(height: 16),
+                  StreamStats(),
+                  SizedBox(height: 16),
+                  AudioMixer(),
+                  SizedBox(height: 16),
+                  QuickActions(),
                 ],
               ),
             ),

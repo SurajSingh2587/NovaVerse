@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/providers/stream_provider.dart';
 import '../../core/providers/scene_provider.dart';
+import '../../core/services/live_stream_platform.dart';
 import '../../core/providers/settings_provider.dart';
 
 class PreviewWidget extends StatefulWidget {
@@ -15,19 +17,29 @@ class PreviewWidget extends StatefulWidget {
 
 class _PreviewWidgetState extends State<PreviewWidget> {
   bool _isFullscreen = false;
-  
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<StreamStateProvider>().rtmpService.initialize();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final streamProvider = context.watch<StreamStateProvider>();
     final sceneProvider = context.watch<SceneProvider>();
     final settings = context.watch<SettingsProvider>();
-    
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: streamProvider.isStreaming 
+          color: streamProvider.isStreaming
               ? AppColors.live.withOpacity(0.5)
               : AppColors.surfaceLighter,
           width: streamProvider.isStreaming ? 2 : 1,
@@ -49,60 +61,73 @@ class _PreviewWidgetState extends State<PreviewWidget> {
           child: Stack(
             children: [
               // Preview background
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      AppColors.surface,
-                      AppColors.surfaceLight,
-                    ],
+              // Preview background
+              if (kIsWeb)
+                Container(
+                  color: Colors.black,
+                  child: const Center(
+                    child: Text(
+                      'Camera Preview not supported on Web',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                )
+              else if (streamProvider.rtmpService.controller != null)
+                ApiVideoCameraPreview(
+                    controller: streamProvider.rtmpService.controller!)
+              else
+                Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.surface,
+                        AppColors.surfaceLight,
+                      ],
+                    ),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: const BoxDecoration(
+                            color: AppColors.surfaceLighter,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            streamProvider.cameraEnabled
+                                ? Icons.videocam_rounded
+                                : Icons.videocam_off_rounded,
+                            color: AppColors.textTertiary,
+                            size: 40,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Initializing Camera...',
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Scene: ${sceneProvider.activeScene?.name ?? 'None'}',
+                          style: const TextStyle(
+                            color: AppColors.textTertiary,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceLighter,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          streamProvider.cameraEnabled
-                              ? Icons.videocam_rounded
-                              : Icons.videocam_off_rounded,
-                          color: AppColors.textTertiary,
-                          size: 40,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        streamProvider.cameraEnabled
-                            ? 'Camera Preview'
-                            : 'Camera Disabled',
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Scene: ${sceneProvider.activeScene?.name ?? 'None'}',
-                        style: const TextStyle(
-                          color: AppColors.textTertiary,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              
+
               // Top overlay - Status bar
               Positioned(
                 top: 0,
@@ -167,7 +192,7 @@ class _PreviewWidgetState extends State<PreviewWidget> {
                             ],
                           ),
                         ),
-                      
+
                       // Recording indicator
                       if (streamProvider.isRecording) ...[
                         const SizedBox(width: 8),
@@ -212,9 +237,9 @@ class _PreviewWidgetState extends State<PreviewWidget> {
                           ),
                         ),
                       ],
-                      
+
                       const Spacer(),
-                      
+
                       // Stream time
                       if (streamProvider.isStreaming)
                         Container(
@@ -242,7 +267,7 @@ class _PreviewWidgetState extends State<PreviewWidget> {
                   ),
                 ),
               ),
-              
+
               // Bottom overlay - Stats
               if (settings.showPreviewStats && streamProvider.isStreaming)
                 Positioned(
@@ -273,7 +298,8 @@ class _PreviewWidgetState extends State<PreviewWidget> {
                         const SizedBox(width: 10),
                         _StatChip(
                           icon: Icons.speed_rounded,
-                          value: '${(streamProvider.bitrate / 1000).toStringAsFixed(1)}Mb/s',
+                          value:
+                              '${(streamProvider.bitrate / 1000).toStringAsFixed(1)}Mb/s',
                         ),
                         const SizedBox(width: 10),
                         _StatChip(
@@ -289,7 +315,7 @@ class _PreviewWidgetState extends State<PreviewWidget> {
                     ),
                   ),
                 ),
-              
+
               // Fullscreen button
               Positioned(
                 bottom: 8,
@@ -314,7 +340,7 @@ class _PreviewWidgetState extends State<PreviewWidget> {
                   ),
                 ),
               ),
-              
+
               // Scene name badge
               if (sceneProvider.activeScene != null)
                 Positioned(

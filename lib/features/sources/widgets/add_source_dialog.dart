@@ -208,7 +208,7 @@ class _AddSourceDialogState extends State<AddSourceDialog> {
                     ],
                   ),
                 ),
-                Icon(
+                const Icon(
                   Icons.chevron_right_rounded,
                   color: AppColors.textTertiary,
                 ),
@@ -367,10 +367,10 @@ class _AddSourceDialogState extends State<AddSourceDialog> {
         color: AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Camera Settings',
             style: TextStyle(
               fontSize: 14,
@@ -378,7 +378,7 @@ class _AddSourceDialogState extends State<AddSourceDialog> {
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             children: [
               Expanded(
@@ -388,7 +388,7 @@ class _AddSourceDialogState extends State<AddSourceDialog> {
                   isSelected: true,
                 ),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: 10),
               Expanded(
                 child: _SettingOption(
                   icon: Icons.camera_rear_rounded,
@@ -410,10 +410,10 @@ class _AddSourceDialogState extends State<AddSourceDialog> {
         color: AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Text Content',
             style: TextStyle(
               fontSize: 14,
@@ -421,10 +421,10 @@ class _AddSourceDialogState extends State<AddSourceDialog> {
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           TextField(
             maxLines: 3,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: 'Enter your text here...',
             ),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/rtmp_service.dart';
 
 enum StreamStatus {
   idle,
@@ -21,7 +22,7 @@ class StreamStateProvider extends ChangeNotifier {
   Duration _recordingDuration = Duration.zero;
   int _viewerCount = 0;
   double _bitrate = 0;
-  int _droppedFrames = 0;
+  final int _droppedFrames = 0;
   int _fps = 30;
   String _streamKey = '';
   String _rtmpUrl = '';
@@ -31,7 +32,7 @@ class StreamStateProvider extends ChangeNotifier {
   double _systemVolume = 0.8;
   bool _cameraEnabled = true;
   bool _screenShareEnabled = false;
-  
+
   // Getters
   StreamStatus get streamStatus => _streamStatus;
   RecordingStatus get recordingStatus => _recordingStatus;
@@ -49,35 +50,59 @@ class StreamStateProvider extends ChangeNotifier {
   double get systemVolume => _systemVolume;
   bool get cameraEnabled => _cameraEnabled;
   bool get screenShareEnabled => _screenShareEnabled;
-  
+
   bool get isStreaming => _streamStatus == StreamStatus.live;
   bool get isRecording => _recordingStatus == RecordingStatus.recording;
   bool get isConnecting => _streamStatus == StreamStatus.connecting;
-  
+
+  final RtmpService _rtmpService = RtmpService();
+  RtmpService get rtmpService => _rtmpService;
+
   // Stream controls
-  Future<void> startStream() async {
+  Future<void> startStream({String? url, String? key}) async {
+    final targetUrl = url ?? _rtmpUrl;
+    final targetKey = key ?? _streamKey;
+
+    if (targetUrl.isEmpty || targetKey.isEmpty) {
+      _streamStatus = StreamStatus.error;
+      notifyListeners();
+      return;
+    }
+
     _streamStatus = StreamStatus.connecting;
     notifyListeners();
-    
-    // Simulate connection delay
-    await Future.delayed(const Duration(seconds: 2));
-    
-    _streamStatus = StreamStatus.live;
-    _streamDuration = Duration.zero;
-    _viewerCount = 0;
-    notifyListeners();
-    
-    // Start duration timer
-    _startStreamTimer();
+
+    try {
+      await _rtmpService.startStream(url: targetUrl, streamKey: targetKey);
+
+      _streamStatus = StreamStatus.live;
+      _streamDuration = Duration.zero;
+      _viewerCount = 0;
+      notifyListeners();
+
+      // Start duration timer
+      _startStreamTimer();
+    } catch (e) {
+      _streamStatus = StreamStatus.error;
+      debugPrint("Streaming error: $e");
+      notifyListeners();
+    }
   }
-  
+
   Future<void> stopStream() async {
+    await _rtmpService.stopStream();
     _streamStatus = StreamStatus.idle;
     _viewerCount = 0;
     _bitrate = 0;
     notifyListeners();
   }
-  
+
+  @override
+  void dispose() {
+    _rtmpService.dispose();
+    super.dispose();
+  }
+
   void _startStreamTimer() {
     Future.doWhile(() async {
       await Future.delayed(const Duration(seconds: 1));
@@ -92,32 +117,32 @@ class StreamStateProvider extends ChangeNotifier {
       return false;
     });
   }
-  
+
   // Recording controls
   Future<void> startRecording() async {
     _recordingStatus = RecordingStatus.recording;
     _recordingDuration = Duration.zero;
     notifyListeners();
-    
+
     _startRecordingTimer();
   }
-  
+
   Future<void> pauseRecording() async {
     _recordingStatus = RecordingStatus.paused;
     notifyListeners();
   }
-  
+
   Future<void> resumeRecording() async {
     _recordingStatus = RecordingStatus.recording;
     notifyListeners();
     _startRecordingTimer();
   }
-  
+
   Future<void> stopRecording() async {
     _recordingStatus = RecordingStatus.idle;
     notifyListeners();
   }
-  
+
   void _startRecordingTimer() {
     Future.doWhile(() async {
       await Future.delayed(const Duration(seconds: 1));
@@ -129,53 +154,55 @@ class StreamStateProvider extends ChangeNotifier {
       return false;
     });
   }
-  
+
   // Settings
   void setStreamKey(String key) {
     _streamKey = key;
     notifyListeners();
   }
-  
+
   void setRtmpUrl(String url) {
     _rtmpUrl = url;
     notifyListeners();
   }
-  
+
   void setPlatform(String platform) {
     _selectedPlatform = platform;
     notifyListeners();
   }
-  
+
   void setFps(int fps) {
     _fps = fps;
     notifyListeners();
   }
-  
+
   void toggleMute() {
     _isMuted = !_isMuted;
     notifyListeners();
   }
-  
+
   void setMicVolume(double volume) {
     _micVolume = volume;
+    _rtmpService.setMicVolume(volume);
     notifyListeners();
   }
-  
+
   void setSystemVolume(double volume) {
     _systemVolume = volume;
+    _rtmpService.setSystemVolume(volume);
     notifyListeners();
   }
-  
+
   void toggleCamera() {
     _cameraEnabled = !_cameraEnabled;
     notifyListeners();
   }
-  
+
   void toggleScreenShare() {
     _screenShareEnabled = !_screenShareEnabled;
     notifyListeners();
   }
-  
+
   // Format duration to string
   String formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');

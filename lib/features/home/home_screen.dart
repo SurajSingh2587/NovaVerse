@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(
+        border: const Border(
           top: BorderSide(
             color: AppColors.surfaceLighter,
             width: 1,

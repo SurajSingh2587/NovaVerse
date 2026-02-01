@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/providers/stream_provider.dart';
+import '../../../core/providers/settings_provider.dart';
 
 class StreamControls extends StatelessWidget {
   const StreamControls({super.key});
@@ -11,7 +12,8 @@ class StreamControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final streamProvider = context.watch<StreamStateProvider>();
-    
+    final settings = context.watch<SettingsProvider>();
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: AppDecorations.surfaceCard(),
@@ -62,9 +64,7 @@ class StreamControls extends StatelessWidget {
                           color: Colors.white,
                           shape: BoxShape.circle,
                         ),
-                      )
-                          .animate(onPlay: (c) => c.repeat(reverse: true))
-                          .scale(
+                      ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
                             begin: const Offset(1, 1),
                             end: const Offset(1.3, 1.3),
                             duration: 600.ms,
@@ -84,7 +84,7 @@ class StreamControls extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          
+
           // Stream timer
           if (streamProvider.isStreaming) ...[
             Center(
@@ -101,7 +101,7 @@ class StreamControls extends StatelessWidget {
             ),
             const SizedBox(height: 20),
           ],
-          
+
           // Main buttons
           Row(
             children: [
@@ -114,25 +114,28 @@ class StreamControls extends StatelessWidget {
                     if (streamProvider.isStreaming) {
                       await streamProvider.stopStream();
                     } else {
-                      await streamProvider.startStream();
+                      await streamProvider.startStream(
+                        url: settings.rtmpServer,
+                        key: settings.streamKey,
+                      );
                     }
                   },
                   isActive: streamProvider.isStreaming,
                   isLoading: streamProvider.isConnecting,
                   activeGradient: AppColors.liveGradient,
                   inactiveColor: AppColors.primary,
-                  icon: streamProvider.isStreaming 
-                      ? Icons.stop_rounded 
+                  icon: streamProvider.isStreaming
+                      ? Icons.stop_rounded
                       : Icons.play_arrow_rounded,
                   label: streamProvider.isConnecting
                       ? 'Connecting...'
-                      : streamProvider.isStreaming 
-                          ? 'End Stream' 
+                      : streamProvider.isStreaming
+                          ? 'End Stream'
                           : 'Go Live',
                 ),
               ),
               const SizedBox(width: 12),
-              
+
               // Record button
               Expanded(
                 child: _StreamButton(
@@ -154,9 +157,9 @@ class StreamControls extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Secondary controls
           Row(
             children: [
@@ -175,7 +178,7 @@ class StreamControls extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              
+
               // Mic toggle
               Expanded(
                 child: _ControlChip(
@@ -191,7 +194,7 @@ class StreamControls extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              
+
               // Screen share toggle
               Expanded(
                 child: _ControlChip(
@@ -244,7 +247,7 @@ class _StreamButton extends StatelessWidget {
         height: compact ? 50 : 56,
         decoration: BoxDecoration(
           gradient: isActive ? activeGradient : null,
-          color: isActive 
+          color: isActive
               ? (activeGradient == null ? activeColor : null)
               : inactiveColor,
           borderRadius: BorderRadius.circular(14),
@@ -273,9 +276,7 @@ class _StreamButton extends StatelessWidget {
                   children: [
                     Icon(
                       icon,
-                      color: isActive 
-                          ? Colors.white 
-                          : AppColors.textSecondary,
+                      color: isActive ? Colors.white : AppColors.textSecondary,
                       size: compact ? 20 : 24,
                     ),
                     if (!compact) ...[
@@ -285,9 +286,8 @@ class _StreamButton extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: isActive 
-                              ? Colors.white 
-                              : AppColors.textSecondary,
+                          color:
+                              isActive ? Colors.white : AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -320,13 +320,13 @@ class _ControlChip extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isActive 
-              ? AppColors.primary.withOpacity(0.2) 
+          color: isActive
+              ? AppColors.primary.withOpacity(0.2)
               : AppColors.surfaceLight,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isActive 
-                ? AppColors.primary.withOpacity(0.5) 
+            color: isActive
+                ? AppColors.primary.withOpacity(0.5)
                 : Colors.transparent,
             width: 1.5,
           ),
@@ -345,9 +345,7 @@ class _ControlChip extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
-                color: isActive 
-                    ? AppColors.primary 
-                    : AppColors.textTertiary,
+                color: isActive ? AppColors.primary : AppColors.textTertiary,
               ),
             ),
           ],

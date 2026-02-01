@@ -158,9 +158,9 @@ class _SplashScreenState extends State<SplashScreen>
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(4),
-                          child: LinearProgressIndicator(
+                          child: const LinearProgressIndicator(
                             backgroundColor: AppColors.surfaceLighter,
-                            valueColor: const AlwaysStoppedAnimation<Color>(
+                            valueColor: AlwaysStoppedAnimation<Color>(
                               AppColors.primary,
                             ),
                           ),
@@ -173,7 +173,7 @@ class _SplashScreenState extends State<SplashScreen>
                               color: AppColors.accent.withOpacity(0.3),
                             ),
                         const SizedBox(height: 16),
-                        Text(
+                        const Text(
                           'Loading...',
                           style: TextStyle(
                             fontSize: 14,

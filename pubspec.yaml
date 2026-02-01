@@ -27,11 +27,11 @@ dependencies:
   google_fonts: ^6.2.1
   flutter_animate: ^4.5.0
   shimmer: ^3.0.0
-
 # 🔒 Force camera Android implementation compatible with Flutter 3.22
 dependency_overrides:
   camera_android_camerax: 0.6.6
 
+  apivideo_live_stream: ^1.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
