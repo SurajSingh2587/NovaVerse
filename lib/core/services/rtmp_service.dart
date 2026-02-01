@@ -1,6 +1,6 @@
-import 'package:apivideo_live_stream/apivideo_live_stream.dart'
-    if (dart.library.html) 'live_stream_web.dart';
+import 'package:apivideo_live_stream/apivideo_live_stream.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -12,11 +12,6 @@ class RtmpService extends ChangeNotifier {
   LiveStreamController? get controller => _controller;
 
   Future<void> initialize() async {
-    if (kIsWeb) {
-      debugPrint("RtmpService: Web platform not supported for RTMP streaming");
-      return;
-    }
-
     // Check permissions
     await [
       Permission.camera,

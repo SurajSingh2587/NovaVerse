@@ -1,11 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/providers/stream_provider.dart';
 import '../../core/providers/scene_provider.dart';
-import '../../core/services/live_stream_platform.dart';
+import 'package:apivideo_live_stream/apivideo_live_stream.dart';
 import '../../core/providers/settings_provider.dart';
 
 class PreviewWidget extends StatefulWidget {
@@ -62,17 +61,8 @@ class _PreviewWidgetState extends State<PreviewWidget> {
             children: [
               // Preview background
               // Preview background
-              if (kIsWeb)
-                Container(
-                  color: Colors.black,
-                  child: const Center(
-                    child: Text(
-                      'Camera Preview not supported on Web',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                )
-              else if (streamProvider.rtmpService.controller != null)
+              // Preview background
+              if (streamProvider.rtmpService.controller != null)
                 ApiVideoCameraPreview(
                     controller: streamProvider.rtmpService.controller!)
               else
