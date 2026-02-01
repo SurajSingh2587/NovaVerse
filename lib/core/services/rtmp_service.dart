@@ -25,10 +25,10 @@ class RtmpService extends ChangeNotifier {
       _controller = ApiVideoLiveStreamController(
         initialAudioConfig: AudioConfig(
           bitrate: 128 * 1000,
-          channel: AudioChannel.stereo,
+          channel: Channel.stereo,
         ),
         initialVideoConfig: VideoConfig.withDefaultBitrate(
-          resolution: VideoResolution.res720p,
+          resolution: Resolution.RESOLUTION_720,
         ),
       );
 
