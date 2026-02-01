@@ -20,12 +20,4 @@ allprojects {
 /*
   Force compileSdk for ALL Android modules (plugins fix)
 */
-subprojects {
-    afterEvaluate { project ->
-        if (project.hasProperty("android")) {
-            project.android {
-                compileSdkVersion 35
-            }
-        }
-    }
-}
+
